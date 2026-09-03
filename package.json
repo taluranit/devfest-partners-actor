@@ -1,5 +1,5 @@
 {
-	"name": "devfest-partners-actor",
+	"name": "devfest-sponsor-prospector",
 	"version": "0.0.1",
 	"type": "module",
 	"description": "Finds companies likely to sponsor DevFest.cz based on patterns from past editions' sponsor lists.",
@@ -7,7 +7,8 @@
 		"node": ">=18.0.0"
 	},
 	"dependencies": {
-		"apify": "^3.7.0"
+		"apify": "^3.7.0",
+		"cheerio": "^1.2.0"
 	},
 	"devDependencies": {
 		"@apify/eslint-config": "^2.0.0",

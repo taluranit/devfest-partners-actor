@@ -1,5 +1,6 @@
 import { Actor, log } from 'apify';
 
+import { fetchCurrentPartnerDomains } from './currentPartners.js';
 import { CATEGORIES, NON_COMPANY_DOMAINS, PAST_SPONSOR_DOMAINS } from './sponsorProfiles.js';
 
 const SEARCH_ACTOR_ID = 'apify/google-search-scraper';
@@ -12,6 +13,7 @@ const {
     categories = Object.keys(CATEGORIES),
     customQueries = [],
     excludeKnownSponsors = true,
+    excludeCurrentPartners = true,
     excludeDomains = [],
     maxPagesPerQuery = 1,
     maxResults = 50,
@@ -27,6 +29,14 @@ const excludedDomainSet = new Set(
         d.toLowerCase().replace(/^www\./, ''),
     ),
 );
+
+if (excludeCurrentPartners) {
+    const currentPartnerDomains = await fetchCurrentPartnerDomains();
+    log.info(`Excluding ${currentPartnerDomains.length} domain(s) found on the live DevFest.cz partners page.`);
+    for (const domain of currentPartnerDomains) {
+        excludedDomainSet.add(domain);
+    }
+}
 
 // Build {query, category} pairs: one query per (category template x region), plus custom queries
 // (category: null - scored purely by keyword overlap across all categories).

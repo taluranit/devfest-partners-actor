@@ -36,9 +36,15 @@
             "default": []
         },
         "excludeKnownSponsors": {
-            "title": "Exclude companies that already sponsor DevFest.cz",
+            "title": "Exclude past sponsors (2019/2025/2026, built-in snapshot)",
             "type": "boolean",
-            "description": "Filters out domains of companies that were already Platinum/Diamond/Gold/Silver partners in the 2019, 2025, or 2026 editions, so results are new prospects rather than existing sponsors.",
+            "description": "Filters out domains of companies that were already Platinum/Diamond/Gold/Silver/media partners in the 2019, 2025, or 2026 editions, based on a hardcoded snapshot taken when this Actor was built.",
+            "default": true
+        },
+        "excludeCurrentPartners": {
+            "title": "Exclude current partners (live from devfest.cz/partners)",
+            "type": "boolean",
+            "description": "Fetches https://devfest.cz/partners at run time and excludes every partner listed there right now, so results always reflect the latest sponsor roster even if it has changed since this Actor was built.",
             "default": true
         },
         "excludeDomains": {

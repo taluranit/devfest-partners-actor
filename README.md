@@ -28,7 +28,8 @@ Run it directly in the Apify Console, via the API, or on a schedule to keep refr
 | `regions` | Geographic phrases combined into each search query | `["Czech Republic"]` |
 | `categories` | Which sponsor archetypes to search for: `devShops`, `saasTools`, `recruitment`, `enterprise` | all four |
 | `customQueries` | Extra free-form Google queries to run alongside the category templates | `[]` |
-| `excludeKnownSponsors` | Filter out companies that already sponsored DevFest.cz 2019/2025/2026 | `true` |
+| `excludeKnownSponsors` | Filter out companies that already sponsored DevFest.cz 2019/2025/2026, based on a hardcoded snapshot | `true` |
+| `excludeCurrentPartners` | Fetch [devfest.cz/partners](https://devfest.cz/partners) live and filter out every partner listed there right now | `true` |
 | `excludeDomains` | Additional domains to exclude | `[]` |
 | `maxPagesPerQuery` | Google result pages to fetch per query (~10 results/page) | `1` |
 | `maxResults` | Cap on the final ranked output list | `50` |
@@ -79,6 +80,7 @@ This Actor doesn't scrape pages itself - it orchestrates [Google Search Results 
 
 - Start with the defaults on a single region to gauge quality before scaling up `regions` or `maxPagesPerQuery` - each addition multiplies the number of queries (and cost).
 - Set `excludeKnownSponsors` to `false` if you want to see how existing sponsors would score, e.g. to validate the model against known-good matches.
+- `excludeCurrentPartners` (live fetch) and `excludeKnownSponsors` (hardcoded snapshot) overlap for the current edition but aren't redundant: the live fetch stays accurate as the current partner roster changes, while the snapshot also covers past editions (2019/2025) that no longer appear on the live partners page.
 - Use `customQueries` to prospect adjacent categories not covered by the four built-in archetypes (e.g. a specific industry vertical).
 
 ## FAQ
