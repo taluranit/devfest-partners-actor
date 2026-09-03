@@ -1,0 +1,17 @@
+{
+	"$schema": "https://apify.com/schemas/v1/actor.ide.json",
+	"actorSpecification": 1,
+	"name": "devfest-partners-actor",
+	"title": "DevFest.cz Sponsor Prospector",
+	"description": "Finds companies likely to sponsor DevFest.cz based on patterns from past editions' sponsor lists.",
+	"version": "0.0",
+	"buildTag": "latest",
+	"meta": {
+		"templateId": "js-empty",
+		"generatedBy": "Claude Code with Claude Sonnet 5"
+	},
+	"dockerfile": "../Dockerfile",
+	"storages": {
+		"dataset": "./dataset_schema.json"
+	}
+}

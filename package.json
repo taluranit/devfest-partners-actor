@@ -1,0 +1,29 @@
+{
+	"name": "devfest-partners-actor",
+	"version": "0.0.1",
+	"type": "module",
+	"description": "Finds companies likely to sponsor DevFest.cz based on patterns from past editions' sponsor lists.",
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"dependencies": {
+		"apify": "^3.7.0"
+	},
+	"devDependencies": {
+		"@apify/eslint-config": "^2.0.0",
+		"eslint": "^9.29.0",
+		"eslint-config-prettier": "^10.1.5",
+		"prettier": "^3.5.3",
+		"vitest": "^4.1.0"
+	},
+	"scripts": {
+		"start": "node ./src/main.js",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"lint": "eslint",
+		"lint:fix": "eslint --fix",
+		"test": "vitest run"
+	},
+	"author": "It's not you it's me",
+	"license": "ISC"
+}

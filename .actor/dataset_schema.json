@@ -1,0 +1,32 @@
+{
+    "actorSpecification": 1,
+    "fields": {},
+    "views": {
+        "overview": {
+            "title": "Candidate sponsors",
+            "transformation": {
+                "fields": [
+                    "companyName",
+                    "website",
+                    "primaryCategory",
+                    "score",
+                    "whyItMightSponsor",
+                    "matchedSignals",
+                    "sampleSnippet"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "companyName": { "label": "Company", "format": "text" },
+                    "website": { "label": "Website", "format": "link" },
+                    "primaryCategory": { "label": "Category", "format": "text" },
+                    "score": { "label": "Score", "format": "number" },
+                    "whyItMightSponsor": { "label": "Why it might sponsor", "format": "text" },
+                    "matchedSignals": { "label": "Matched signals", "format": "array" },
+                    "sampleSnippet": { "label": "Snippet", "format": "text" }
+                }
+            }
+        }
+    }
+}

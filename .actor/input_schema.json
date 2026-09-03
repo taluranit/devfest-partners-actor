@@ -1,0 +1,69 @@
+{
+    "title": "DevFest.cz Sponsor Prospector input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "regions": {
+            "title": "Target regions",
+            "type": "array",
+            "description": "Geographic phrases to combine with the search patterns below, e.g. \"Czech Republic\" or \"Prague\". More regions = more search queries = higher run cost.",
+            "editor": "stringList",
+            "default": ["Czech Republic"],
+            "prefill": ["Czech Republic"]
+        },
+        "categories": {
+            "title": "Sponsor-fit categories to search for",
+            "type": "array",
+            "description": "Based on analysis of past DevFest.cz sponsors (2019/2025/2026 editions), sponsorship there is driven by developer-recruitment and employer-branding, not general product marketing. Pick which sponsor archetypes to prospect for.",
+            "editor": "select",
+            "items": {
+                "type": "string",
+                "enum": ["devShops", "saasTools", "recruitment", "enterprise"],
+                "enumTitles": [
+                    "Software dev shops & IT services (employer branding)",
+                    "SaaS & developer-tool platforms",
+                    "Recruitment / job platforms targeting developers",
+                    "Large enterprises with active tech-hiring arms"
+                ]
+            },
+            "default": ["devShops", "saasTools", "recruitment", "enterprise"]
+        },
+        "customQueries": {
+            "title": "Custom search queries (optional)",
+            "type": "array",
+            "description": "Extra free-form Google search queries to run in addition to the category templates above, e.g. \"fintech startup Prague hiring developers\".",
+            "editor": "stringList",
+            "default": []
+        },
+        "excludeKnownSponsors": {
+            "title": "Exclude companies that already sponsor DevFest.cz",
+            "type": "boolean",
+            "description": "Filters out domains of companies that were already Platinum/Diamond/Gold/Silver partners in the 2019, 2025, or 2026 editions, so results are new prospects rather than existing sponsors.",
+            "default": true
+        },
+        "excludeDomains": {
+            "title": "Additional domains to exclude",
+            "type": "array",
+            "description": "Extra domains to skip in the results (e.g. your own company, competitors already contacted).",
+            "editor": "stringList",
+            "default": []
+        },
+        "maxPagesPerQuery": {
+            "title": "Max Google result pages per query",
+            "type": "integer",
+            "description": "Each page is ~10 organic results. Higher values find more candidates but cost more (billed by the search Actor per page scraped).",
+            "default": 1,
+            "minimum": 1,
+            "maximum": 3
+        },
+        "maxResults": {
+            "title": "Max companies to return",
+            "type": "integer",
+            "description": "Caps the final, ranked output list.",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 500
+        }
+    },
+    "required": []
+}
