@@ -1,0 +1,16 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "Output schema of DevFest.cz Sponsor Prospector",
+    "properties": {
+        "candidateSponsors": {
+            "type": "string",
+            "title": "Candidate sponsors",
+            "template": "{{links.apiDefaultDatasetUrl}}/items"
+        },
+        "run": {
+            "type": "string",
+            "title": "Run details",
+            "template": "{{links.consoleRunUrl}}"
+        }
+    }
+}
