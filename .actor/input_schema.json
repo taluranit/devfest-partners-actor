@@ -69,6 +69,41 @@
             "default": 50,
             "minimum": 1,
             "maximum": 500
+        },
+        "findContacts": {
+            "title": "Find a LinkedIn contact per company",
+            "type": "boolean",
+            "description": "For the top-ranked companies, searches LinkedIn (via harvestapi/linkedin-company-employees) for a likely sponsorship contact in Marketing, Employer Branding, HR, DevRel, or Community. Adds extra cost and retrieves personal data (name, title, LinkedIn profile URL) - only enable this if you have a legitimate business reason (e.g. sponsorship outreach) and are comfortable with the linked Actor's data-collection practices and LinkedIn's terms.",
+            "default": false
+        },
+        "contactJobTitles": {
+            "title": "Contact job titles to search for",
+            "type": "array",
+            "description": "Job titles/keywords used to filter LinkedIn employees when \"Find a LinkedIn contact per company\" is on. Edit to widen or narrow the search.",
+            "editor": "stringList",
+            "default": [
+                "Marketing Manager",
+                "Head of Marketing",
+                "Employer Branding",
+                "Employer Branding Manager",
+                "HR Manager",
+                "Human Resources",
+                "People Operations",
+                "Talent Acquisition",
+                "Developer Relations",
+                "Developer Advocate",
+                "DevRel",
+                "Community Manager",
+                "Head of Community"
+            ]
+        },
+        "maxCompaniesForContactSearch": {
+            "title": "Max companies to search for a contact",
+            "type": "integer",
+            "description": "How many of the top-ranked companies to run the LinkedIn contact search for. Capped at 20 so the search stays in the LinkedIn Actor's cheaper \"all at once\" batch mode (a single search covering all companies at once) rather than the pricier per-company mode.",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 20
         }
     },
     "required": []

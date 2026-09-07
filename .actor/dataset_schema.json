@@ -10,10 +10,14 @@
                     "website",
                     "primaryCategory",
                     "score",
+                    "contact.name",
+                    "contact.title",
+                    "contact.linkedinUrl",
                     "whyItMightSponsor",
                     "matchedSignals",
                     "sampleSnippet"
-                ]
+                ],
+                "flatten": ["contact"]
             },
             "display": {
                 "component": "table",
@@ -22,6 +26,9 @@
                     "website": { "label": "Website", "format": "link" },
                     "primaryCategory": { "label": "Category", "format": "text" },
                     "score": { "label": "Score", "format": "number" },
+                    "contact.name": { "label": "Contact", "format": "text" },
+                    "contact.title": { "label": "Contact title", "format": "text" },
+                    "contact.linkedinUrl": { "label": "LinkedIn", "format": "link" },
                     "whyItMightSponsor": { "label": "Why it might sponsor", "format": "text" },
                     "matchedSignals": { "label": "Matched signals", "format": "array" },
                     "sampleSnippet": { "label": "Snippet", "format": "text" }

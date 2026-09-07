@@ -1,9 +1,26 @@
 import { Actor, log } from 'apify';
 
+import { enrichWithContacts } from './contactFinder.js';
 import { fetchCurrentPartnerDomains } from './currentPartners.js';
 import { CATEGORIES, NON_COMPANY_DOMAINS, PAST_SPONSOR_DOMAINS } from './sponsorProfiles.js';
 
 const SEARCH_ACTOR_ID = 'apify/google-search-scraper';
+
+const DEFAULT_CONTACT_JOB_TITLES = [
+    'Marketing Manager',
+    'Head of Marketing',
+    'Employer Branding',
+    'Employer Branding Manager',
+    'HR Manager',
+    'Human Resources',
+    'People Operations',
+    'Talent Acquisition',
+    'Developer Relations',
+    'Developer Advocate',
+    'DevRel',
+    'Community Manager',
+    'Head of Community',
+];
 
 await Actor.init();
 
@@ -17,6 +34,9 @@ const {
     excludeDomains = [],
     maxPagesPerQuery = 1,
     maxResults = 50,
+    findContacts = false,
+    contactJobTitles = DEFAULT_CONTACT_JOB_TITLES,
+    maxCompaniesForContactSearch = 10,
 } = input;
 
 const selectedCategories = categories.filter((key) => CATEGORIES[key]);
@@ -166,6 +186,10 @@ const rankedCandidates = [...candidatesByDomain.values()]
     })
     .sort((a, b) => b.score - a.score)
     .slice(0, maxResults);
+
+if (findContacts) {
+    await enrichWithContacts(rankedCandidates, { jobTitles: contactJobTitles, maxCompanies: maxCompaniesForContactSearch });
+}
 
 log.info(`Pushing ${rankedCandidates.length} ranked candidate(s) to the dataset.`);
 await Actor.pushData(rankedCandidates);
