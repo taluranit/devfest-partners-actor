@@ -6,20 +6,21 @@ import { CATEGORIES, NON_COMPANY_DOMAINS, PAST_SPONSOR_DOMAINS } from './sponsor
 
 const SEARCH_ACTOR_ID = 'apify/google-search-scraper';
 
+// Broad, short terms - confirmed by a live test call to match real titles like "Talent Acquisition
+// Partner", "Employer branding & marketing specialist", and "Senior People Care Partner". Longer,
+// more specific phrases (e.g. "Employer Branding Manager") matched far fewer real-world titles.
 const DEFAULT_CONTACT_JOB_TITLES = [
-    'Marketing Manager',
-    'Head of Marketing',
+    'Marketing',
     'Employer Branding',
-    'Employer Branding Manager',
-    'HR Manager',
+    'HR',
     'Human Resources',
-    'People Operations',
+    'People',
     'Talent Acquisition',
+    'Recruiting',
     'Developer Relations',
-    'Developer Advocate',
     'DevRel',
-    'Community Manager',
-    'Head of Community',
+    'Developer Advocate',
+    'Community',
 ];
 
 await Actor.init();

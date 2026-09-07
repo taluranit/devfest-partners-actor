@@ -79,22 +79,20 @@
         "contactJobTitles": {
             "title": "Contact job titles to search for",
             "type": "array",
-            "description": "Job titles/keywords used to filter LinkedIn employees when \"Find a LinkedIn contact per company\" is on. Edit to widen or narrow the search.",
+            "description": "Job titles/keywords used to filter LinkedIn employees when \"Find a LinkedIn contact per company\" is on. Broad, short terms tend to match more real-world titles than long specific phrases. Edit to widen or narrow the search.",
             "editor": "stringList",
             "default": [
-                "Marketing Manager",
-                "Head of Marketing",
+                "Marketing",
                 "Employer Branding",
-                "Employer Branding Manager",
-                "HR Manager",
+                "HR",
                 "Human Resources",
-                "People Operations",
+                "People",
                 "Talent Acquisition",
+                "Recruiting",
                 "Developer Relations",
-                "Developer Advocate",
                 "DevRel",
-                "Community Manager",
-                "Head of Community"
+                "Developer Advocate",
+                "Community"
             ]
         },
         "maxCompaniesForContactSearch": {

@@ -42,7 +42,11 @@ export async function enrichWithContacts(candidates, { jobTitles, maxCompanies }
     log.info(`Found ${profiles.length} LinkedIn profile(s) across the searched companies.`);
 
     for (const profile of profiles) {
-        const profileCompanyName = profile.currentPosition?.[0]?.companyName ?? profile.experience?.[0]?.companyName;
+        // The Actor's real output uses a `currentPositions` array (confirmed by a live test call),
+        // not the singular `currentPosition`/`headline` shape shown in its own README example.
+        const positions = profile.currentPositions ?? profile.experience ?? [];
+        const position = positions.find((p) => p.current) ?? positions[0];
+        const profileCompanyName = position?.companyName;
         if (!profileCompanyName) continue;
         const normalizedProfileCompany = normalizeCompanyName(profileCompanyName);
 
@@ -58,7 +62,7 @@ export async function enrichWithContacts(candidates, { jobTitles, maxCompanies }
 
         match.contact = {
             name: `${profile.firstName ?? ''} ${profile.lastName ?? ''}`.trim() || null,
-            title: profile.headline ?? null,
+            title: position?.title ?? profile.headline ?? null,
             linkedinUrl: profile.linkedinUrl ?? null,
         };
     }
