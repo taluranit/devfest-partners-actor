@@ -161,18 +161,51 @@ function buildWhySponsor(bestCategory, matchedSignals) {
     return `Fits the "${profile.label}" pattern seen in past DevFest.cz sponsors (e.g. ${profile.exampleSponsors.join(', ')}).${signalsText}`;
 }
 
+// Generic nav/breadcrumb words that are never a company's own name, even when they end up as
+// the first title segment (e.g. "Product | Acme Inc" would otherwise extract as "Product").
+const GENERIC_TITLE_SEGMENTS = new Set(['home', 'homepage', 'product', 'products', 'blog', 'about', 'about us', 'contact', 'news', 'login', 'search', 'careers', 'jobs']);
+
 function cleanCompanyName(titles, domain) {
     const firstTitle = titles.find((t) => t && t.trim().length > 0);
     if (!firstTitle) return domain;
-    // Strip common "Title | Site name" / "Title - Site name" suffixes, keep the first segment.
-    return firstTitle.split(/[|\-–]/)[0].trim() || domain;
+    // Strip common "Title | Site name" / "Title - Site name" / "Title: Site name" wrapping, then
+    // prefer the longest non-generic segment - real company names are rarely the single shortest
+    // word in the title, but pages inconsistently put the site name first or last.
+    const segments = firstTitle
+        .split(/[|:\-–]/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 1 && !GENERIC_TITLE_SEGMENTS.has(s.toLowerCase()));
+    if (segments.length === 0) return firstTitle.trim() || domain;
+    return segments.reduce((longest, s) => (s.length > longest.length ? s : longest), segments[0]);
+}
+
+// Search results sometimes surface listicles, job-board aggregators, or individual job postings
+// instead of an actual company - these should never be treated as a candidate sponsor.
+function looksLikeListicleOrAggregator(companyName) {
+    const text = companyName.toLowerCase();
+    const commaCount = (companyName.match(/,/g) ?? []).length;
+    return (
+        /^\d+\s/.test(text) ||
+        /\b(top|best)\b/.test(text) ||
+        /\bjobs?\s+in\b/i.test(companyName) ||
+        // Job-board titles like "Software Engineer in Prague, Praha, Czech Republic"
+        /\b(engineer|developer|manager|specialist|analyst|designer|consultant)\s+in\s+[A-Z]/.test(companyName) ||
+        /\((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{4}\)/i.test(companyName) ||
+        /\b(startups|investors|agencies|freelancers|scrapers)\b/.test(text) ||
+        /^how\b/i.test(companyName) || // blog-post headlines: "How X Helps ..."
+        /\bfor\s+\w+\s+(projects?|teams?|startups?|businesses?|companies)\b/i.test(companyName) ||
+        commaCount >= 2 // real company names essentially never carry a location breadcrumb tail
+    );
 }
 
 const rankedCandidates = [...candidatesByDomain.values()]
     .map((candidate) => {
+        const companyName = cleanCompanyName(candidate.titles, candidate.domain);
+        if (looksLikeListicleOrAggregator(companyName)) return null;
+
         const { bestCategory, matchedSignals, totalScore } = scoreCandidate(candidate);
         return {
-            companyName: cleanCompanyName(candidate.titles, candidate.domain),
+            companyName,
             domain: candidate.domain,
             website: candidate.website,
             primaryCategory: bestCategory ? CATEGORIES[bestCategory].label : 'Uncategorized (custom query)',
@@ -184,6 +217,7 @@ const rankedCandidates = [...candidatesByDomain.values()]
             foundUrls: [...candidate.urls],
         };
     })
+    .filter(Boolean)
     .sort((a, b) => b.score - a.score)
     .slice(0, maxResults);
 

@@ -42,14 +42,17 @@ export async function enrichWithContacts(candidates, { jobTitles, maxCompanies }
     log.info(`Found ${profiles.length} LinkedIn profile(s) across the searched companies.`);
 
     for (const profile of profiles) {
-        const profileCompanyName = profile.currentPosition?.[0]?.companyName;
+        const profileCompanyName = profile.currentPosition?.[0]?.companyName ?? profile.experience?.[0]?.companyName;
         if (!profileCompanyName) continue;
         const normalizedProfileCompany = normalizeCompanyName(profileCompanyName);
 
         const match = targets.find((candidate) => {
             if (candidate.contact) return false; // keep the first (best-ranked-by-actor) hit per company
             const normalizedCandidate = normalizeCompanyName(candidate.companyName);
-            return normalizedCandidate && (normalizedProfileCompany.includes(normalizedCandidate) || normalizedCandidate.includes(normalizedProfileCompany));
+            // Require a few real characters on both sides before trusting a substring match,
+            // so short/generic normalized names (e.g. "io") don't match unrelated companies.
+            if (normalizedCandidate.length < 3 || normalizedProfileCompany.length < 3) return false;
+            return normalizedProfileCompany.includes(normalizedCandidate) || normalizedCandidate.includes(normalizedProfileCompany);
         });
         if (!match) continue;
 
