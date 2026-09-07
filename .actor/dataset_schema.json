@@ -8,6 +8,7 @@
                 "fields": [
                     "companyName",
                     "website",
+                    "regionVerified",
                     "primaryCategory",
                     "score",
                     "contact.name",
@@ -24,6 +25,7 @@
                 "properties": {
                     "companyName": { "label": "Company", "format": "text" },
                     "website": { "label": "Website", "format": "link" },
+                    "regionVerified": { "label": "Region confirmed", "format": "boolean" },
                     "primaryCategory": { "label": "Category", "format": "text" },
                     "score": { "label": "Score", "format": "number" },
                     "contact.name": { "label": "Contact", "format": "text" },

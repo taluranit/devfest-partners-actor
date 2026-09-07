@@ -180,23 +180,57 @@ function cleanCompanyName(titles, domain) {
     return segments.reduce((longest, s) => (s.length > longest.length ? s : longest), segments[0]);
 }
 
-// Search results sometimes surface listicles, job-board aggregators, or individual job postings
-// instead of an actual company - these should never be treated as a candidate sponsor.
+// Common resume/bio-bullet opening verbs - a real company name is essentially never the first
+// word of a past-tense achievement statement (e.g. a LinkedIn summary fragment leaking through
+// as a search result "title").
+const BIO_FRAGMENT_STARTERS = new Set([
+    'led', 'built', 'helped', 'created', 'founded', 'launched', 'drove', 'managed', 'delivered', 'grew', 'scaled', 'developed', 'designed',
+]);
+
+// Search results sometimes surface listicles, job-board aggregators, individual job postings, or
+// bio/resume fragments instead of an actual company - these should never be a candidate sponsor.
 function looksLikeListicleOrAggregator(companyName) {
     const text = companyName.toLowerCase();
     const commaCount = (companyName.match(/,/g) ?? []).length;
+    const firstWord = text.split(/\s+/)[0]?.replace(/[^a-z]/g, '');
     return (
         /^\d+\s/.test(text) ||
         /\b(top|best)\b/.test(text) ||
-        /\bjobs?\s+in\b/i.test(companyName) ||
-        // Job-board titles like "Software Engineer in Prague, Praha, Czech Republic"
-        /\b(engineer|developer|manager|specialist|analyst|designer|consultant)\s+in\s+[A-Z]/.test(companyName) ||
+        /\bjobs?\s+in\b/i.test(text) ||
+        // Job-board titles like "Software Engineer in Prague, Praha, Czech Republic" (plural-safe, case-insensitive)
+        /\b(engineers?|developers?|managers?|specialists?|analysts?|designers?|consultants?)\s+in\s+[a-z]/i.test(companyName) ||
         /\((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{4}\)/i.test(companyName) ||
         /\b(startups|investors|agencies|freelancers|scrapers)\b/.test(text) ||
-        /^how\b/i.test(companyName) || // blog-post headlines: "How X Helps ..."
-        /\bfor\s+\w+\s+(projects?|teams?|startups?|businesses?|companies)\b/i.test(companyName) ||
-        commaCount >= 2 // real company names essentially never carry a location breadcrumb tail
+        /^how\b/.test(text) || // blog-post headlines: "How X Helps ..."
+        /\bfor\s+\w+\s+(projects?|teams?|startups?|businesses?|companies)\b/.test(text) ||
+        commaCount >= 2 || // real company names essentially never carry a location breadcrumb tail
+        BIO_FRAGMENT_STARTERS.has(firstWord)
     );
+}
+
+// Maps a region string to extra text/domain signals that confirm a candidate is actually tied to
+// that region - not just that the region name appeared in the search *query* that found it.
+const REGION_ALIASES = {
+    'czech republic': ['czech', 'czechia', 'prague', 'praha', 'brno', 'ostrava', 'plzeň', 'plzen', '.cz'],
+    czechia: ['czech', 'czechia', 'prague', 'praha', 'brno', 'ostrava', 'plzeň', 'plzen', '.cz'],
+    prague: ['prague', 'praha', '.cz'],
+    slovakia: ['slovak', 'bratislava', '.sk'],
+    poland: ['poland', 'polska', 'warsaw', 'warszawa', 'krakow', 'kraków', '.pl'],
+    hungary: ['hungary', 'budapest', '.hu'],
+    'central and eastern europe': ['czech', 'slovak', 'poland', 'hungary', 'central europe', 'eastern europe', 'cee'],
+    cee: ['czech', 'slovak', 'poland', 'hungary', 'central europe', 'eastern europe', 'cee'],
+};
+
+function getRegionAliases(region) {
+    return REGION_ALIASES[region.toLowerCase().trim()] ?? [region.toLowerCase().trim()];
+}
+
+// True only if the region actually appears in the result's own text/domain - not merely in the
+// query that found it - so a globally-known company that happens to rank for a Czech-flavored
+// query (e.g. via an unrelated case study) doesn't get silently presented as a Czech prospect.
+function hasRegionSignal(candidate, targetRegions) {
+    const text = `${candidate.titles.join(' ')} ${candidate.snippets.join(' ')} ${candidate.domain}`.toLowerCase();
+    return targetRegions.some((region) => getRegionAliases(region).some((alias) => text.includes(alias)));
 }
 
 const rankedCandidates = [...candidatesByDomain.values()]
@@ -205,12 +239,14 @@ const rankedCandidates = [...candidatesByDomain.values()]
         if (looksLikeListicleOrAggregator(companyName)) return null;
 
         const { bestCategory, matchedSignals, totalScore } = scoreCandidate(candidate);
+        const regionVerified = hasRegionSignal(candidate, regions);
         return {
             companyName,
             domain: candidate.domain,
             website: candidate.website,
             primaryCategory: bestCategory ? CATEGORIES[bestCategory].label : 'Uncategorized (custom query)',
-            score: totalScore,
+            score: totalScore + (regionVerified ? 3 : 0),
+            regionVerified,
             matchedSignals,
             whyItMightSponsor: buildWhySponsor(bestCategory, matchedSignals),
             sampleSnippet: candidate.snippets[0] ?? '',

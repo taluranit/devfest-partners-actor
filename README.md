@@ -49,8 +49,9 @@ Each dataset item is one candidate company:
     "companyName": "Applifting",
     "domain": "applifting.io",
     "website": "https://applifting.io",
+    "regionVerified": true,
     "primaryCategory": "Software dev shop / IT services (employer branding)",
-    "score": 5,
+    "score": 8,
     "matchedSignals": ["software development", "custom software", "we are hiring"],
     "whyItMightSponsor": "Fits the \"Software dev shop / IT services (employer branding)\" pattern seen in past DevFest.cz sponsors (e.g. Applifting, Aricoma, Second Foundation, Unicorn, FlowUp, Seyfor). Matched signals: software development, custom software, we are hiring.",
     "sampleSnippet": "Applifting builds custom software and helps companies scale their engineering teams...",
@@ -75,8 +76,9 @@ You can download the dataset in various formats such as JSON, CSV, Excel, or HTM
 | `companyName` | Best-effort company name extracted from the search result title |
 | `domain` | Root domain, used for de-duplication |
 | `website` | Homepage URL |
+| `regionVerified` | Whether the search result's own title/description/domain actually mentions the target region (e.g. "Czech", "Prague", a `.cz` domain) - not just that the region name appeared in the *query* that found it. `false` means review manually before treating it as a regional prospect. |
 | `primaryCategory` | Sponsor archetype the company scored highest against |
-| `score` | Relative ranking score (keyword matches + repeat appearances across queries) |
+| `score` | Relative ranking score (keyword matches + repeat appearances across queries + a bonus if `regionVerified` is true) |
 | `matchedSignals` | Keywords from the winning category that matched the page's title/description |
 | `whyItMightSponsor` | Plain-English reasoning, naming comparable past DevFest.cz sponsors |
 | `sampleSnippet` | A representative search-result description |
@@ -98,6 +100,7 @@ This Actor doesn't scrape pages itself - it orchestrates other Actors, which cha
 - `excludeCurrentPartners` (live fetch) and `excludeKnownSponsors` (hardcoded snapshot) overlap for the current edition but aren't redundant: the live fetch stays accurate as the current partner roster changes, while the snapshot also covers past editions (2019/2025) that no longer appear on the live partners page.
 - Use `customQueries` to prospect adjacent categories not covered by the four built-in archetypes (e.g. a specific industry vertical).
 - LinkedIn's own job-title taxonomy varies a lot by company, so `contact` matching is best-effort - not every company will get a hit, and a hit isn't guaranteed to be the ideal person. Treat it as a starting point for outreach, not a verified decision-maker.
+- Including `regions` in a search query doesn't guarantee every *result* is actually about that region - a globally-known company can still rank for a Czech-flavored query (e.g. via an unrelated case study or blog mention). Check `regionVerified` before treating a result as a confirmed regional prospect; `false` results are still worth a quick manual look, just not automatically trusted.
 
 ## Personal data & compliance
 
